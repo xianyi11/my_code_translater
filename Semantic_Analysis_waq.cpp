@@ -76,7 +76,7 @@ void GrammaAnalysis::Statement()
     else {
         //问题很大
         NameTableType ValTpye = Type.Name == "int"? INT1:FLOAT1;
-        VarTable.push_back(Var{ ID.Name,ValTpye,true,Type.ival,Type.fval,Level,(int)MiddleCodeTable.size(),ProcNoStack[int(ProcNoStack.size()-1)]});
+        VarTable.push_back(Var{ ID.Name,ValTpye,Type.ival,Type.fval,ProcNoStack[int(ProcNoStack.size()-1)]});
     }
     SemanticStack.push(State);
 }
@@ -92,7 +92,6 @@ void GrammaAnalysis::ProA()
 {
     SemanticTreeNode A;
     A.Name=SemanticLeftSign.str;
-    Level++;
     ProcNo++;
     ProcNoStack.push_back(ProcNo);
     SemanticStack.push(A);
@@ -113,7 +112,6 @@ void GrammaAnalysis::StateTypeF()
 //$语义  此处类型为变量 之后归约不用特判
 void GrammaAnalysis::VarStatement()
 {
-    Level--;
     ProcNoStack.pop_back();
     int RightLen = 1;
     GetStorePop(RightLen);
@@ -144,7 +142,7 @@ void GrammaAnalysis::FormalParameters()
     SemanticTreeNode fp = StorePop[0];
     fp.Name= SemanticLeftSign.str;
     for(auto &item:fp.param){
-        VarTable.push_back(Var{ item.name,item.type,true,0,0,Level,(int)MiddleCodeTable.size(),ProcNoStack[int(ProcNoStack.size()-1)]});
+        VarTable.push_back(Var{ item.name,item.type,0,0,ProcNoStack[int(ProcNoStack.size()-1)]});
     }
     SemanticStack.push(fp);
 }
@@ -197,7 +195,6 @@ void GrammaAnalysis::Parameter()
 //$语义 <语句块>nextlist = <语句串>nextlist
 void GrammaAnalysis::StatementBlock()
 {
-    Level--;
     ProcNoStack.pop_back();
     int RightLen = 4;
     GetStorePop(RightLen);
@@ -225,7 +222,7 @@ void GrammaAnalysis::InnerVarState()
         return;
     }
     NameTableType ValTpye = Type.Name == "int" ? INT1 : FLOAT1;
-    VarTable.push_back(Var{ ID.Name,ValTpye,true,Type.ival,Type.fval,Level,(int)MiddleCodeTable.size(),ProcNoStack[int(ProcNoStack.size()-1)]});
+    VarTable.push_back(Var{ ID.Name,ValTpye,Type.ival,Type.fval,ProcNoStack[int(ProcNoStack.size()-1)]});
     SemanticStack.push(InnerVar);
 }
 //<语句串> :: = <语句> | <语句> <M> <语句串>

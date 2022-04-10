@@ -26,11 +26,11 @@ class MainWindow;
 struct Var {
     string name;//名字标识符
     NameTableType type;//名字的类型
-    bool normal;//true为非形参，false为形参
+//    bool normal;//true为非形参，false为形参
     int ival;
     float fval;
-    int level;//变量层级
-    int quad;//记录哪条代码产生该变量 方便寻找未定义就使用
+//    int level;//变量层级
+//    int quad;//记录哪条代码产生该变量 方便寻找未定义就使用
     int ProcNo;//过程编号
 };
 

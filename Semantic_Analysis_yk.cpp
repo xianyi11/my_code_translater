@@ -31,10 +31,8 @@ string GrammaAnalysis::MallocVar()
     MiddleVarIndex++;
     temp.name = name;
     temp.type = FLOAT1;
-    temp.normal = true;
     temp.fval = 0;
     temp.ival = 0;
-    temp.level=Level;
     temp.ProcNo = ProcNoStack[int(ProcNoStack.size())-1];
     VarTable.push_back(temp);
     return temp.name;
@@ -456,7 +454,7 @@ void GrammaAnalysis::SemanticAction(ProduceForms* ResoProduce)
 //下面是一些文件输出函数(debug)
 ofstream& operator << (ofstream& os,const Var& s)
 {
-    os<<s.name<<": "<<" s.fval["<<s.fval<<"] s.ival["<<s.ival<<"] s.level["<<s.level<<"] s.normal["<<s.normal<<"] s.quad["<<s.quad<<"] s.type["<<s.type<<"]"<<" s.ProcNo["<<s.ProcNo<<"]";
+    os<<s.name<<": "<<" s.fval["<<s.fval<<"] s.ival["<<s.ival<<"] s.type["<<s.type<<"]"<<" s.ProcNo["<<s.ProcNo<<"]";
     return os;
 }
 
