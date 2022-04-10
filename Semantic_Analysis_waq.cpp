@@ -70,14 +70,13 @@ void GrammaAnalysis::Statement()
             semanticerror = FuncReturnErr;
             ErrorFuncName=ID.Name;
             return;
-
         }
         FuncTable.push_back(Func{ ID.Name,ValTpye,M.Quad,StateType.param });
     }
     else {
         //问题很大
         NameTableType ValTpye = Type.Name == "int"? INT1:FLOAT1;
-        VarTable.push_back(Var{ ID.Name,ValTpye,true,Type.ival,Type.fval,Level,(int)MiddleCodeTable.size() });
+        VarTable.push_back(Var{ ID.Name,ValTpye,true,Type.ival,Type.fval,Level,(int)MiddleCodeTable.size(),ProcNoStack[int(ProcNoStack.size()-1)]});
     }
     SemanticStack.push(State);
 }
@@ -94,6 +93,8 @@ void GrammaAnalysis::ProA()
     SemanticTreeNode A;
     A.Name=SemanticLeftSign.str;
     Level++;
+    ProcNo++;
+    ProcNoStack.push_back(ProcNo);
     SemanticStack.push(A);
 }
 //<声明类型>:: = <变量声明> | <函数声明>
@@ -113,6 +114,7 @@ void GrammaAnalysis::StateTypeF()
 void GrammaAnalysis::VarStatement()
 {
     Level--;
+    ProcNoStack.pop_back();
     int RightLen = 1;
     GetStorePop(RightLen);
     SemanticTreeNode VarState;
@@ -142,7 +144,7 @@ void GrammaAnalysis::FormalParameters()
     SemanticTreeNode fp = StorePop[0];
     fp.Name= SemanticLeftSign.str;
     for(auto &item:fp.param){
-        VarTable.push_back(Var{ item.name,item.type,true,0,0,Level,(int)MiddleCodeTable.size() });
+        VarTable.push_back(Var{ item.name,item.type,true,0,0,Level,(int)MiddleCodeTable.size(),ProcNoStack[int(ProcNoStack.size()-1)]});
     }
     SemanticStack.push(fp);
 }
@@ -195,8 +197,8 @@ void GrammaAnalysis::Parameter()
 //$语义 <语句块>nextlist = <语句串>nextlist
 void GrammaAnalysis::StatementBlock()
 {
-    DeleteVarTable(Level);
     Level--;
+    ProcNoStack.pop_back();
     int RightLen = 4;
     GetStorePop(RightLen);
     SemanticTreeNode statement_block= StorePop[1];
@@ -215,14 +217,15 @@ void GrammaAnalysis::InnerVarState()
     SemanticTreeNode& Type = StorePop[1];
     SemanticTreeNode& ID = StorePop[0];
     //问题很大
-    int index;
-    if((index=CheckVarTable(ID.Name))!=-1&&VarTable[index].level==Level) {
+    int index = 0;
+    if((index = CheckVarTable(ID.Name))!=-1 && index == ProcNoStack[int(ProcNoStack.size())-1])
+    {
         semanticerror = RedefineVar;
         ErrorVarName=ID.Name;
         return;
     }
     NameTableType ValTpye = Type.Name == "int" ? INT1 : FLOAT1;
-    VarTable.push_back(Var{ ID.Name,ValTpye,true,Type.ival,Type.fval,Level,(int)MiddleCodeTable.size() });
+    VarTable.push_back(Var{ ID.Name,ValTpye,true,Type.ival,Type.fval,Level,(int)MiddleCodeTable.size(),ProcNoStack[int(ProcNoStack.size()-1)]});
     SemanticStack.push(InnerVar);
 }
 //<语句串> :: = <语句> | <语句> <M> <语句串>
@@ -385,22 +388,24 @@ int GrammaAnalysis::CheckVarTable(const string&name)
 {
     for(int i=int(VarTable.size())-1;i>=0;--i){
         if(VarTable[i].name==name){
-            return i;
+            for(int j=0;j<(int)ProcNoStack.size();j++)
+                if(VarTable[i].ProcNo == ProcNoStack[j])
+                    return ProcNoStack[j];
         }
     }
     return -1;
 }
 //删变量表
-void GrammaAnalysis::DeleteVarTable(int level)
-{
-    int start=-1,end=-1;
-    for(int i=0;i<int(VarTable.size());++i){
-        if(VarTable[i].level==level){
-            if(start==-1){
-                start=i;
-            }
-            end=i;
-        }
-    }
-    VarTable.erase(VarTable.begin()+start,VarTable.begin()+end);
-}
+//void GrammaAnalysis::DeleteVarTable(int level)
+//{
+//    int start=-1,end=-1;
+//    for(int i=0;i<int(VarTable.size());++i){
+//        if(VarTable[i].level==level){
+//            if(start==-1){
+//                start=i;
+//            }
+//            end=i;
+//        }
+//    }
+//    VarTable.erase(VarTable.begin()+start,VarTable.begin()+end);
+//}

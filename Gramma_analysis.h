@@ -31,6 +31,7 @@ struct Var {
     float fval;
     int level;//变量层级
     int quad;//记录哪条代码产生该变量 方便寻找未定义就使用
+    int ProcNo;//过程编号
 };
 
 struct Par {
@@ -240,6 +241,9 @@ private:
 
     //层级
     int Level;
+    //目前的过程编号
+    int ProcNo;
+    vector<int> ProcNoStack;
     //下面是语义动作函数
     Sign SemanticLeftSign;
     //在调用下面的函数的时候，自己进栈出栈

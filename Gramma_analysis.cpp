@@ -82,7 +82,11 @@ GrammaAnalysis::GrammaAnalysis(lexical_analysis* MyWordSets, const string _FileP
     GraphOutDot = _GraphDotOutput;
     MiddleVarIndex = 0;
     this->IsSematic = IsSematic;
+
     Level = 0;//层级
+    ProcNo = 0;//目前的过程编号
+    ProcNoStack.push_back(ProcNo);//过程栈
+
     semanticerror = None;
     ProduceFormsGenerate();
 //    for (auto pf_p : ProduceFormsVec)
