@@ -1,0 +1,6 @@
+============================变量表=============================
+a:  s.fval[0] s.ival[15184816] s.level[0] s.normal[1] s.quad[1] s.type[0]
+b:  s.fval[0] s.ival[15184816] s.level[0] s.normal[1] s.quad[1] s.type[0]
+T10:  s.fval[0] s.ival[0] s.level[1] s.normal[1] s.quad[0] s.type[1]
+==============================================================
+

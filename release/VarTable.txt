@@ -1,0 +1,7 @@
+============================变量表=============================
+a:  s.fval[4.2039e-045] s.ival[1877654069] s.level[0] s.normal[1] s.quad[1] s.type[0]
+b:  s.fval[4.2039e-045] s.ival[1877654069] s.level[0] s.normal[1] s.quad[1] s.type[0]
+d:  s.fval[4.2039e-045] s.ival[1877654069] s.level[0] s.normal[1] s.quad[1] s.type[0]
+T10:  s.fval[0] s.ival[0] s.level[1] s.normal[1] s.quad[6670872] s.type[1]
+==============================================================
+
