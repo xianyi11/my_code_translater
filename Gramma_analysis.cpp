@@ -401,6 +401,7 @@ int GrammaAnalysis::Forward(QStandardItemModel* ProcessSetData)//前向传播，
             QMessageBox::information(NULL, "错误",ErrorInfo.c_str(),
                                      QMessageBox::Yes, QMessageBox::Yes);
             return -1;
+//            return 0;
         }
         Action = ActionTable[pair<int, Sign>{TopState, Sign{ InSign.str,InSign.type }}];
         if (Action.Type == Acc)//接受
@@ -506,7 +507,8 @@ void GrammaAnalysis::SDisError(int WordPos,SemanticError ErrType)
         ErrorInfo+=ErrorFuncName;
         ErrorInfo+="返回类型与声明类型不一致\n";
     }
-    else if(ErrType ==NoVar){
+    else if(ErrType ==NoVar)
+    {
         ErrorInfo+="未定义变量";
         ErrorInfo+=ErrorVarName;
         ErrorInfo+="\n";
@@ -514,13 +516,24 @@ void GrammaAnalysis::SDisError(int WordPos,SemanticError ErrType)
         ErrorInfo+=ErrorPos;
         ErrorInfo+="\n";
     }
-    else if(ErrType ==RedefineVar){
+    else if(ErrType ==RedefineVar)
+    {
         ErrorInfo+="重定义变量";
         ErrorInfo+=ErrorVarName;
         ErrorInfo+="\n";
         ErrorInfo+="出错位置";
         ErrorInfo+=ErrorPos;
         ErrorInfo+="\n";
+    }
+    else if(ErrType == ArrayIndexError)
+    {
+        ErrorInfo+="数组下标使用错误";
+        ErrorInfo+=ErrorVarName;
+        ErrorInfo+="\n";
+        ErrorInfo+="出错位置";
+        ErrorInfo+=ErrorPos;
+        ErrorInfo+="\n";
+
     }
     QMessageBox::information(NULL, "错误",ErrorInfo.c_str(),
                              QMessageBox::Yes, QMessageBox::Yes);

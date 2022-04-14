@@ -132,6 +132,37 @@ void GrammaAnalysis::Factor_4()
     SemanticStack.push(Factor);
 }
 
+//<因子> ::= ID <数组>
+//$语义: 检查下标是否正确
+//$语义: 检查数组变量是否存在
+void GrammaAnalysis::Factor_5()
+{
+    int RightLen = 2;
+    GetStorePop(RightLen);
+    SemanticTreeNode Factor;
+    SemanticTreeNode &ID = StorePop[1];
+    SemanticTreeNode &ArrayExpr = StorePop[0];
+    Factor.Name = ID.Name;
+    Factor.type = NonTerminator;
+    Factor.normal = true;
+    Factor.IsNull = 0;
+    int error_num = CheckArrayTable(ID.Name,ArrayExpr.dems);
+    if(error_num == -1){
+        ErrorVarName=ID.Name;
+        semanticerror = NoVar;
+        return;
+    }
+    else if(error_num == -2)
+    {
+        ErrorVarName=ID.Name;
+        semanticerror = ArrayIndexError;
+        return;
+    }
+    SemanticStack.push(Factor);
+}
+
+
+
 void GrammaAnalysis::ArgumentList_1()
 {
     int RightLen = 1;
@@ -297,6 +328,91 @@ void GrammaAnalysis::Expression_2()
 //    Expr.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(Expr);
 }
+//<数组> ::= [ num ]
+//$语义: 需要记录num的值
+void GrammaAnalysis::ArrayFactor1()
+{
+    int RightLen = 3;
+    GetStorePop(RightLen);
+    SemanticTreeNode ArrayFactor;
+    SemanticTreeNode &dimennum = StorePop[1];
+    ArrayFactor.dems.push_back(dimennum.ival);
+    SemanticStack.push(ArrayFactor);
+}
+
+//<数组> ::= [ num ] <数组>
+//$语义: 需要记录num的值
+void GrammaAnalysis::ArrayFactor2()
+{
+    int RightLen = 4;
+    GetStorePop(RightLen);
+    SemanticTreeNode ArrayFactor;
+    SemanticTreeNode &PreArrayFactor = StorePop[0];
+    SemanticTreeNode &dimennum = StorePop[2];
+    ArrayFactor.dems = PreArrayFactor.dems;
+    ArrayFactor.dems.push_back(dimennum.ival);
+    SemanticStack.push(ArrayFactor);
+}
+//<内部数组声明> ::= int ID <数组>
+//$语义: 记录变量表中数组类型变量的维度，数组的名称，以及数组所在的过程位置
+void GrammaAnalysis::ArrayStatement()
+{
+    int RightLen = 3;
+    GetStorePop(RightLen);
+    SemanticTreeNode ArrayState;
+    SemanticTreeNode &ArrayFactor = StorePop[0];
+    SemanticTreeNode &ID = StorePop[1];
+    SemanticTreeNode &type = StorePop[2];
+    ArrayState.dems = ArrayFactor.dems;
+    ArrayState.Namekind = Array;
+    ArrayState.Name = ID.Name;
+    VarTable.push_back(Var{ ID.Name,INT1,Array,0,0,ProcNoStack[int(ProcNoStack.size()-1)],ArrayFactor.dems});
+    SemanticStack.push(ArrayState);
+}
+
+//<赋值语句> ::= ID <数组> = <表达式> ;
+//$语义: 检查下标是否正确
+//$语义: 检查数组变量是否存在
+void GrammaAnalysis::AssignMent1()
+{
+    int RightLen = 5;
+    GetStorePop(RightLen);
+    SemanticTreeNode AssignState;
+    AssignState.Name = SemanticLeftSign.str;
+    SemanticTreeNode &Exp = StorePop[1];
+    SemanticTreeNode &ArrayExpr = StorePop[3];
+    SemanticTreeNode &ID = StorePop[4];
+    if(CheckVarTable(Exp.Name)!=-1||isdigit(Exp.Name[0]))
+        ;
+    else{
+        ErrorVarName=Exp.Name;
+        semanticerror = NoVar;
+        return;
+    }
+    int error_num = CheckArrayTable(ID.Name,ArrayExpr.dems);
+    if(error_num == -1){
+        ErrorVarName=ID.Name;
+        semanticerror = NoVar;
+        return;
+    }
+    else if(error_num == -2)
+    {
+        ErrorVarName=ID.Name;
+        semanticerror = ArrayIndexError;
+        return;
+    }
+    else
+    {
+        for(int i = int(ArrayExpr.dems.size()-1);i>=0;i--)
+        {
+            ID.Name = ID.Name+" "+to_string(ArrayExpr.dems[i]);
+        }
+        MiddleCodeTable.push_back(Code{ "=",Exp.Name ,"-",ID.Name });
+    }
+    SemanticStack.push(AssignState);
+}
+
+
 
 //语义动作调用函数
 //思路：根据id顺序调用
@@ -446,6 +562,25 @@ void GrammaAnalysis::SemanticAction(ProduceForms* ResoProduce)
     case 58://[ <实参列表>-->空  ]
         ArgumentList_3();
         break;
+    case 59://<内部声明> ::= <内部数组声明> ; <内部声明>
+        PopPush((int)ResoProduce->RightSign.size());
+        break;
+    case 60://<内部数组声明> ::= int ID <数组>
+        ArrayStatement();
+        break;
+    case 61://<数组> ::= [ num ]
+        ArrayFactor1();
+        break;
+    case 62://<数组> ::= [ num ] <数组>
+        ArrayFactor2();
+        break;
+    case 63://<赋值语句> ::= ID <数组> = <表达式> ;
+        AssignMent1();
+        break;
+    case 64://<因子> ::= ID <数组>
+        Factor_5();
+        break;
+
     default:
         break;
     }

@@ -16,7 +16,7 @@
 using namespace std;
 enum SignType{ StartTerminator,Terminator , NonTerminator, Empty};
 enum ActionType { Resolution,MoveIn ,Acc };
-enum SemanticError {None,NoFuncName,FuncParLenError,FuncReturnErr, NoMainName,RedefineVar,NoVar};
+enum SemanticError {None,NoFuncName,FuncParLenError,FuncReturnErr, NoMainName,RedefineVar,NoVar,ArrayIndexError};
 enum NameTableKind { Varible, ConstV, Array, Proc };
 enum NameTableType { INT1, FLOAT1,VOID1 };
 
@@ -26,12 +26,11 @@ class MainWindow;
 struct Var {
     string name;//名字标识符
     NameTableType type;//名字的类型
-//    bool normal;//true为非形参，false为形参
+    NameTableKind valtype;//变量类型
     int ival;
     float fval;
-//    int level;//变量层级
-//    int quad;//记录哪条代码产生该变量 方便寻找未定义就使用
     int ProcNo;//过程编号
+    vector<int> dims;//维度数组，从后往前
 };
 
 struct Par {
@@ -201,7 +200,7 @@ struct SemanticTreeNode
     //非终结符的一些属性
     bool normal;//是形参还是实参
     int Adr;//如果是函数，记录地址(这里的地址应该是四元式的编号)
-    int len;//数组元素个数(暂时不用)
+    vector<int> dems;//数组维度,从后往前
     vector<Par> param;//参数，如果是函数
 };
 
@@ -260,11 +259,12 @@ private:
     void ArgumentList_2();
     void ArgumentList_3();
     //因子
-    //<因子> ::=num |  ( <表达式> )  |ID  |ID ( <实参列表> )
+    //<因子> ::=num |  ( <表达式> )  |ID  |ID ( <实参列表> ) | ID <数组>
     void Factor_1();
     void Factor_2();
     void Factor_3();
     void Factor_4();
+    void Factor_5();
     //项
     //<项> ::= <因子>| <因子> * <项>|<因子> / <项>
     void Item_1();
@@ -311,7 +311,7 @@ private:
     void Parameter();
     //<语句块> ::= { <内部声明>  <语句串> }
     void StatementBlock();
-    //<内部声明> ::= 空 | <内部变量声明> ; <内部声明>
+    //<内部声明> ::= 空 | <内部变量声明> ; <内部声明> |  <内部数组声明> ; <内部声明>
     //直接调用void PopPush(int len);
 
     //<内部变量声明>::=int  ID|float  ID
@@ -321,8 +321,9 @@ private:
     void SentenceList2();
     //<语句> ::= <if语句> |<while语句> | <return语句> | <赋值语句>
     void Sentence();
-    //<赋值语句> ::=  ID = <表达式> ;
+    //<赋值语句> ::=  ID = <表达式> ;|ID <数组> = <表达式> ;
     void AssignMent();
+    void AssignMent1();
     //<return语句> :: = return <表达式>; | return;
     void Return1();
     void Return2();
@@ -331,6 +332,15 @@ private:
     //<if语句> ::= if  ( <表达式> )  <A> <语句块>  |if  ( <表达式> ) <A>  <语句块> <N> else <M> <A> <语句块>
     void If1();
     void If2();
+    //<内部数组声明> ::= int ID <数组>
+    void ArrayStatement();
+
+    //<数组> ::= [ num ] | [ num ] <数组>
+    void ArrayFactor1();
+    void ArrayFactor2();
+
+
+
     //查找函数表 没有返回-1
     int FindFuncTable(const string&FuncName);
     //回填
@@ -345,6 +355,8 @@ private:
     void SDisError(int WordPos,SemanticError ErrType);
     //查变量表
     int  CheckVarTable(const string&name);
+    //查数组变量
+    int  CheckArrayTable(const string&name,vector<int>&dims);
     //删变量表
     void DeleteVarTable(int level);
 

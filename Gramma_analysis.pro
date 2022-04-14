@@ -15,12 +15,14 @@ SOURCES += \
     Semantic_Analysis_yk.cpp \
     lexical_analysis.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    optimizer.cpp
 
 HEADERS += \
     Gramma_analysis.h \
     lexical_analysis.h \
-    mainwindow.h
+    mainwindow.h \
+    optimizer.h
 
 FORMS += \
     mainwindow.ui
