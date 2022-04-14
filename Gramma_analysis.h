@@ -36,6 +36,7 @@ struct Var {
 struct Par {
     NameTableType type;//参数类型
     string name;//参数名
+    vector<int> dims;
 };
 //函数元素
 struct Func {
@@ -359,7 +360,10 @@ private:
     int  CheckArrayTable(const string&name,vector<int>&dims);
     //删变量表
     void DeleteVarTable(int level);
-
+    //寻找目前使用的变量,返回类型为var
+    Var FindVarTable(string name);
+    //得到中间代码表的变量名
+    string GetMiddleName(string Name,vector<int>dims = vector<int>{});
     //下面是语法分析函数
     void GetFull(ProductionSet& MyDFAState);//通过当前LR1Productions中已有的状态求闭包
     void ProduceFormsGenerate();//产生一个包含ProduceForms的vector

@@ -120,10 +120,15 @@ void GrammaAnalysis::Factor_4()
         semanticerror = FuncParLenError;
     }
     for (int i = (int)Factor.content[2].param.size() - 1; i >= 0; i--)//生成参数压栈中间代码
-        MiddleCodeTable.push_back(Code{"Par",Factor.content[2].param[i].name ,"-","-"});
+    {
+        string VFactorName = GetMiddleName(Factor.content[2].param[i].name,Factor.content[2].param[i].dims);
+        MiddleCodeTable.push_back(Code{"Par",VFactorName ,"-","-"});
+    }
     string Temp = MallocVar();//申请中间变量，填到表中
-    MiddleCodeTable.push_back(Code{ "call",Factor.content[0].Name,"-","-" });
-    MiddleCodeTable.push_back(Code{ "=","@BackReturn","-",Temp });
+    MiddleCodeTable.push_back(Code{ "=","@BackReturn","-",GetMiddleName(Temp) });
+
+    MiddleCodeTable.push_back(Code{ "call",GetMiddleName(Factor.content[0].Name),"-","-" });
+
     Factor.Name = Temp;
     Factor.type = NonTerminator;
     Factor.normal = true;
@@ -146,6 +151,7 @@ void GrammaAnalysis::Factor_5()
     Factor.type = NonTerminator;
     Factor.normal = true;
     Factor.IsNull = 0;
+    Factor.dems = ArrayExpr.dems;
     int error_num = CheckArrayTable(ID.Name,ArrayExpr.dems);
     if(error_num == -1){
         ErrorVarName=ID.Name;
@@ -174,7 +180,7 @@ void GrammaAnalysis::ArgumentList_1()
     ArgumentList.type = NonTerminator;
     ArgumentList.IsNull = 0;
     //ArgumentList.content.push_back(Expr);
-    ArgumentList.param.push_back(Par{ FLOAT1,Expr.Name });
+    ArgumentList.param.push_back(Par{ FLOAT1,Expr.Name,Expr.dems });
 //    ArgumentList.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(ArgumentList);
 }
@@ -194,7 +200,7 @@ void GrammaAnalysis::ArgumentList_2()
     ArgumentList.IsNull = 0;
     //ArgumentList.content.push_back(Expr);//无关紧要
     ArgumentList.param = Parlist.param;
-    ArgumentList.param.push_back(Par{ FLOAT1,Expr.Name });
+    ArgumentList.param.push_back(Par{ FLOAT1,Expr.Name,Expr.dems });
 //    ArgumentList.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(ArgumentList);
 }
@@ -219,6 +225,7 @@ void GrammaAnalysis::Item_1()
     //Item.content.push_back(Factor);
     Item.normal = true;
     Item.type = NonTerminator;
+    Item.dems = Factor.dems;
 //    Item.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(Item);
 }
@@ -238,7 +245,8 @@ void GrammaAnalysis::Item_23()
     //Item.content.push_back(LastItem);
     Item.type = NonTerminator;
     Item.normal = true;
-    MiddleCodeTable.push_back(Code{ CalSign.Name,Factor.Name,LastItem.Name,Item.Name });
+
+    MiddleCodeTable.push_back(Code{ CalSign.Name,GetMiddleName(Factor.Name,Factor.dems),GetMiddleName(LastItem.Name,LastItem.dems),GetMiddleName(Item.Name,Item.dems) });
 //    Item.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(Item);
 }
@@ -254,6 +262,7 @@ void GrammaAnalysis::AddExpr_1()
     AddExpr.IsNull = 0;
     AddExpr.normal = true;
     AddExpr.type = NonTerminator;
+    AddExpr.dems = Factor.dems;
 //    AddExpr.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(AddExpr);
 }
@@ -271,7 +280,8 @@ void GrammaAnalysis::AddExpr_23()
     AddExpr.IsNull = 0;
     AddExpr.type = NonTerminator;
     AddExpr.normal = true;
-    MiddleCodeTable.push_back(Code{ CalSign.Name,Factor.Name,LastAddExpr.Name,AddExpr.Name });
+
+    MiddleCodeTable.push_back(Code{ CalSign.Name,GetMiddleName(Factor.Name,Factor.dems),GetMiddleName(LastAddExpr.Name,LastAddExpr.dems),GetMiddleName(AddExpr.Name,AddExpr.dems) });
 //    AddExpr.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(AddExpr);
 }
@@ -301,6 +311,7 @@ void GrammaAnalysis::Expression_1()
     Expr.type = NonTerminator;
 //    Expr.NextList.push_back((int)MiddleCodeTable.size());
     Expr.normal = true;
+    Expr.dems = AddExpr.dems;
     SemanticStack.push(Expr);
 }
 void GrammaAnalysis::Expression_2()
@@ -324,7 +335,8 @@ void GrammaAnalysis::Expression_2()
     Expr.type = NonTerminator;
     Expr.normal = true;
     Expr.FalseList.push_back((int)MiddleCodeTable.size());
-    MiddleCodeTable.push_back(Code{ ("j" + reverse[Relop.Name]),AddExpr1.Name,AddExpr2.Name,"-1" });//
+
+    MiddleCodeTable.push_back(Code{ ("j" + reverse[Relop.Name]),GetMiddleName(AddExpr1.Name,AddExpr1.dems),GetMiddleName(AddExpr2.Name,AddExpr2.dems),"-1" });
 //    Expr.NextList.push_back((int)MiddleCodeTable.size());
     SemanticStack.push(Expr);
 }
@@ -403,11 +415,14 @@ void GrammaAnalysis::AssignMent1()
     }
     else
     {
+        Var VID = FindVarTable(ID.Name);
+        string VIDNo = VID.ProcNo != -1?to_string(VID.ProcNo):"";//需要区分中间变量表中的每一个变量
+        ID.Name = ID.Name+" "+VIDNo;
         for(int i = int(ArrayExpr.dems.size()-1);i>=0;i--)
         {
             ID.Name = ID.Name+" "+to_string(ArrayExpr.dems[i]);
         }
-        MiddleCodeTable.push_back(Code{ "=",Exp.Name ,"-",ID.Name });
+        MiddleCodeTable.push_back(Code{ "=",GetMiddleName(Exp.Name,Exp.dems) ,"-",ID.Name });
     }
     SemanticStack.push(AssignState);
 }

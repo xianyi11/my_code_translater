@@ -268,7 +268,6 @@ void GrammaAnalysis::AssignMent()
     Assign.Name = SemanticLeftSign.str;
     SemanticTreeNode &Exp = StorePop[1];
     SemanticTreeNode &ID = StorePop[3];
-    int procNo = 0;
     if(CheckVarTable(Exp.Name)!=-1||isdigit(Exp.Name[0]))
         ;
     else{
@@ -277,7 +276,11 @@ void GrammaAnalysis::AssignMent()
         return;
     }
     if(CheckVarTable(ID.Name)!=-1)
-        MiddleCodeTable.push_back(Code{ "=",Exp.Name ,"-",ID.Name });
+    {
+        string VIDName = GetMiddleName(ID.Name,ID.dems);
+        string VExpName = GetMiddleName(Exp.Name,Exp.dems);
+        MiddleCodeTable.push_back(Code{ "=",VExpName ,"-",VIDName });
+    }
     else{
         ErrorVarName=ID.Name;
         semanticerror = NoVar;
@@ -296,7 +299,8 @@ void GrammaAnalysis::Return1()
     SemanticTreeNode& Exp = StorePop[1];
     ReType=FLOAT1;
     //可以考虑赋值returnplace
-    MiddleCodeTable.push_back({ "return",Exp.Name,"-","-" });
+    string VExpName = GetMiddleName(Exp.Name,Exp.dems);
+    MiddleCodeTable.push_back({ "return",VExpName,"-","-" });
     SemanticStack.push(re);
 }
 void GrammaAnalysis::Return2()
@@ -414,6 +418,34 @@ int GrammaAnalysis::CheckArrayTable(const string&name,vector<int>&dims)
 
 }
 
+Var GrammaAnalysis::FindVarTable(string name)
+{
+    for(int i = (int)VarTable.size()-1;i>=0;i--)
+    {
+        if(VarTable[i].name == name)
+        {
+            return VarTable[i];
+        }
+    }
+    Var temp;
+    temp.ProcNo = -1;
+    return temp;
+}
+
+string GrammaAnalysis::GetMiddleName(string Name,vector<int>dims)
+{
+    string name = Name;
+    Var VNode = FindVarTable(Name);
+    if(VNode.ProcNo == -1)
+        return name;
+    name = name + " " + to_string(VNode.ProcNo);
+    if(VNode.valtype == Array)
+    {
+        for(int i=0;i<(int)dims.size();i++)
+            name = name+" "+to_string(dims[i]);
+    }
+    return name;
+}
 
 //删变量表
 //void GrammaAnalysis::DeleteVarTable(int level)

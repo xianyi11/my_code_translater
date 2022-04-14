@@ -26,13 +26,13 @@ struct CODE_BLOCK{
     vector<Code> code;//基本块中的中间代码
     vector<OVar> varlist;//变量列表
     vector<OVar> Outvarlist;//出基本块还需要使用的变量列表
-    vector<CODE_BLOCK&> NextBlock;//下一个程序块，构造程序流图需要使用
+    vector<CODE_BLOCK> NextBlock;//下一个程序块，构造程序流图需要使用
 };
 
 //DAG图的结点
 struct DAGNode{
     OVar Dval;//定值，结点右边的值
-    vector<DAGNode &> Opval;//操作数
+    vector<DAGNode> Opval;//操作数
     OPERATOR op;//操作类型
 };
 
