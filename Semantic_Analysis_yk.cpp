@@ -418,7 +418,7 @@ void GrammaAnalysis::AssignMent1()
         Var VID = FindVarTable(ID.Name);
         string VIDNo = VID.ProcNo != -1?to_string(VID.ProcNo):"";//需要区分中间变量表中的每一个变量
         ID.Name = ID.Name+" "+VIDNo;
-        for(int i = int(ArrayExpr.dems.size()-1);i>=0;i--)
+        for(int i = 0;i<int(ArrayExpr.dems.size());i++)
         {
             ID.Name = ID.Name+" "+to_string(ArrayExpr.dems[i]);
         }
@@ -616,6 +616,7 @@ ofstream& operator << (ofstream& os,const Func& s)
         os<<" param"<<i+1<<"["<<s.param[i].name<<" "<<s.param[i].type<<"]";
     }
     os<<" s.type["<<s.type<<"]";
+    os<<" s.adr["<<s.adr<<"]";
     return os;
 }
 

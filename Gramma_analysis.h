@@ -215,7 +215,11 @@ public:
     friend ofstream& operator << (ofstream& os,const vector<Var>& s);
     friend ofstream& operator << (ofstream& os,const vector<Func>& s);
     friend ofstream& operator << (ofstream& os,const Code& s);
-private:    
+    vector<Var> VarTable;//变量表
+    vector<Func> FuncTable;//函数表
+    vector<Array_> ArrayTable;//数组表
+    vector<Code> MiddleCodeTable;//中间代码表
+private:
     string FilePath, TableOut, GraphOut,GraphOutDot;
     lexical_analysis* WordSets;//词法分析器的结果，输入符号
     stack <TreeNode> SignStack;//符号栈
@@ -232,10 +236,6 @@ private:
     //下面是语义分析的各种表
     bool IsSematic;//是否进行语义分析
     //语义分析debug文件名
-    vector<Var> VarTable;//变量表
-    vector<Func> FuncTable;//函数表
-    vector<Array_> ArrayTable;//数组表
-    vector<Code> MiddleCodeTable;//中间代码表
     stack <SemanticTreeNode> SemanticStack;//语义分析栈
     vector <SemanticTreeNode> StorePop;//储存pop出来的值
 

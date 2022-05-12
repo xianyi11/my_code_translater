@@ -264,6 +264,7 @@ debug/moc_mainwindow.cpp: mainwindow.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qheaderview.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtGui/QStandardItemModel \
 		../../../Qt/5.15.2/mingw81_64/include/QtGui/qstandarditemmodel.h \
+		optimizer.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/QPushButton \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qpushbutton.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qabstractbutton.h \
@@ -977,6 +978,7 @@ debug/main.o: main.cpp mainwindow.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qheaderview.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtGui/QStandardItemModel \
 		../../../Qt/5.15.2/mingw81_64/include/QtGui/qstandarditemmodel.h \
+		optimizer.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/QPushButton \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qpushbutton.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qabstractbutton.h \
@@ -1141,6 +1143,7 @@ debug/mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qheaderview.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtGui/QStandardItemModel \
 		../../../Qt/5.15.2/mingw81_64/include/QtGui/qstandarditemmodel.h \
+		optimizer.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/QPushButton \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qpushbutton.h \
 		../../../Qt/5.15.2/mingw81_64/include/QtWidgets/qabstractbutton.h \

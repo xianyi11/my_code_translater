@@ -106,6 +106,7 @@ GrammaAnalysis::GrammaAnalysis(lexical_analysis* MyWordSets, const string _FileP
     //	cout << ProductionSetVec[i] << endl;
     BuildActionGo();
     PrintActionGoToFile();
+
 }
 
 Sign::Sign(string MyStr, SignType MyType)

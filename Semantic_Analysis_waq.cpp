@@ -442,7 +442,11 @@ string GrammaAnalysis::GetMiddleName(string Name,vector<int>dims)
     if(VNode.valtype == Array)
     {
         for(int i=0;i<(int)dims.size();i++)
+        {
+            cout<<"dims[i]:"<<dims[i]<<" ";
             name = name+" "+to_string(dims[i]);
+        }
+        cout<<endl;
     }
     return name;
 }

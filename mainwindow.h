@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "Gramma_analysis.h"
 #include "lexical_analysis.h"
+#include "optimizer.h"
 #include <QPushButton>
 #include <QFileDialog>
 #include <QLabel>

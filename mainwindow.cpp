@@ -499,7 +499,6 @@ void MainWindow::AnalysisGrammar()
     VarOutFile.close();
     FuncOutFile.close();
     CodeOutFile.close();
-
     if(IsError == -1)
         return;
     string cmd = GraphExe;
@@ -522,6 +521,9 @@ void MainWindow::AnalysisGrammar()
         IsSematicTest->setText("已进行语义分析");
     else
         IsSematicTest->setText("未进行语义分析");
+
+    Optimizer temp_Optim(g->VarTable,g->FuncTable,g->MiddleCodeTable);
+
     IsSematicTest->show();
     ToFirstSet->show();
     HasFirstSet = 0;

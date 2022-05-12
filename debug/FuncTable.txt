@@ -1,6 +1,6 @@
 ============================函数表=============================
-program: param1[a 0] param2[b 0] param3[c 0] s.type[0]
-demo: param1[a 0] s.type[0]
-main: s.type[2]
+program: param1[a 0] param2[b 0] param3[c 0] s.type[0] s.adr[1]
+demo: param1[a 0] s.type[0] s.adr[15]
+main: s.type[2] s.adr[19]
 ==============================================================
 
