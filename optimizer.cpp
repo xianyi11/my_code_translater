@@ -90,7 +90,7 @@ double atof(string a)
 string ftoa(double f)
 {
     char temp[100] = {0};
-    sprintf(temp,"%lf",f);
+    sprintf(temp,"%g",f);
     string res = temp;
     return res;
 }

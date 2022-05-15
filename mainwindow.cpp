@@ -523,6 +523,8 @@ void MainWindow::AnalysisGrammar()
         IsSematicTest->setText("未进行语义分析");
 
     Optimizer temp_Optim(g->VarTable,g->FuncTable,g->MiddleCodeTable);
+    ObjectCodeGenerator temp_Obptim(temp_Optim.VarTable,temp_Optim.FuncTable,temp_Optim.MiddleCodeTable,temp_Optim.CodeBlock,"object_code.txt");
+    temp_Obptim.Forward();
 
     IsSematicTest->show();
     ToFirstSet->show();

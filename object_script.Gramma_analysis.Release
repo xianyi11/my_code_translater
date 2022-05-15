@@ -1,0 +1,10 @@
+release/Gramma_analysis.o
+release/Gramma_analysis_waq.o
+release/Semantic_Analysis_waq.o
+release/Semantic_Analysis_yk.o
+release/lexical_analysis.o
+release/main.o
+release/mainwindow.o
+release/object_code.o
+release/optimizer.o
+release/moc_mainwindow.o

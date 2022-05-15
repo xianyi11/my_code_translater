@@ -1,0 +1,10 @@
+debug/Gramma_analysis.o
+debug/Gramma_analysis_waq.o
+debug/Semantic_Analysis_waq.o
+debug/Semantic_Analysis_yk.o
+debug/lexical_analysis.o
+debug/main.o
+debug/mainwindow.o
+debug/object_code.o
+debug/optimizer.o
+debug/moc_mainwindow.o

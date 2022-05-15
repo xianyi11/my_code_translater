@@ -47,6 +47,10 @@ struct DAGNode{
 
     string FuncN;       //记录返回的函数名
 };
+//判断字符串是否为浮点数（仅判断格式，不考虑范围）
+bool isFloat(const char * str);
+double atof(string a);
+string ftoa(double f);
 
 
 class Optimizer{
@@ -59,6 +63,7 @@ private:
     ofstream OptimOutput;//中间代码输出，便于查看
     //使用邻接表进行存储
 public:
+    friend MainWindow;
     //初始化优化器，使用变量表，函数表以及中间代码表即可进行优化
     Optimizer(vector<Var> VarTable1,vector<Func> FuncTable1,vector<Code> MiddleCodeTable1);
     //添加变量

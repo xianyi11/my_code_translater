@@ -16,12 +16,14 @@ SOURCES += \
     lexical_analysis.cpp \
     main.cpp \
     mainwindow.cpp \
+    object_code.cpp \
     optimizer.cpp
 
 HEADERS += \
     Gramma_analysis.h \
     lexical_analysis.h \
     mainwindow.h \
+    object_code.h \
     optimizer.h
 
 FORMS += \
