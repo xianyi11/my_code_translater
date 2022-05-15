@@ -10,9 +10,9 @@ lw $t1 0x10010014($t0)
 mul $t1 $a1 $a2
 lw $t2 0x10010018($t0)
 add $t2 $t1 1
-lw $t1 0x1001001c($t0)
-add $t1 $a0 $t2
-sw $t1 0x1001001c($t0)
+lw $t3 0x1001001c($t0)
+add $t3 $a0 $t2
+sw $t3 0x1001001c($t0)
 j label1
 label0:
 lw $t1 0x1001001c($t0)
@@ -25,14 +25,17 @@ bgt $t1 100 label2
 lw $t1 0x10010000($t0)
 lw $t2 0x1001001c($t0)
 mul $t1 $t2 2
+lw $t2 0x1001001c($t0)
+mul $t2 $t2 2
 sw $t1 0x10010000($t0)
+sw $t2 0x1001001c($t0)
 j label1
+label2:
 lw $t1 0x10010000($t0)
 add $v0 $t0 $t1
 sw $t1 0x10010000($t0)
 jr $ra
 demo:
-label2:
 lw $t1 0x10010020($t0)
 add $t1 $a0 2
 lw $t2 0x10010028($t0)
@@ -41,16 +44,20 @@ add $v0 $t0 $t2
 sw $t2 0x10010028($t0)
 jr $ra
 main:
-add $a0 $t0 4
-jal demo
 lw $t1 0x1001002c($t0)
-add $t1 $t0 $v0
+add $t2 $t0 4
+lw $t3 0x10010038($t0)
+add $t1 $t2 $t3
+add $a0 $t0 $t1
+jal demo
+lw $t2 0x10010040($t0)
+add $t2 $t0 $v0
 add $a0 $t0 3
 add $a1 $t0 4
-add $a2 $t0 $t1
+add $a2 $t0 $t2
 jal program
-lw $t2 0x1001003c($t0)
-add $t2 $t0 $v0
-sw $t2 0x10010033($t0)
+lw $t4 0x1001003c($t0)
+add $t4 $t0 $v0
+sw $t4 0x1001003c($t0)
 jr $ra
 

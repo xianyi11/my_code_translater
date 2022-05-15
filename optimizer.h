@@ -100,7 +100,8 @@ public:
     void FindRoots();
     //使用递归方式生成优化后的节点
     void GenOCodedfs(CODE_BLOCK&,int cur);
-
+    //修改跳转指令的目标地址
+    void UpdateJumpTar();
 };
 
 

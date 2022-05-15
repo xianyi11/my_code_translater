@@ -108,6 +108,7 @@ void ObjectCodeGenerator::Forward()
         GenOcodeClear(CodeBlocks[i]);
         GenOcode(CodeBlocks[i]);
         GenOcodeEnd(CodeBlocks[i]);
+        Ocode2Obcode.push_back(ObCodeTable.size());
     }
     //处理一下跳转语句
     CalJumpTar();
@@ -224,7 +225,7 @@ void ObjectCodeGenerator::GenOcodeEnd(CODE_BLOCK& CodeBlock)
 
                 int varaddr = varinfo.addr;
                 if(myvartype==1)//说明是数组元素
-                    varaddr+=CalArrayPos(Vallist[i]);//计算数组元素的位置
+                    varaddr+=CalArrayPos(Vallist[i])*addr_unit;//计算数组元素的位置
                 ObCodeTable.push_back("sw "+Reg+" 0x"+myitoa(varaddr)+"($t0)");//写回内存
                 varinfo.isnew = 1;//新的
             }
@@ -248,7 +249,6 @@ void ObjectCodeGenerator::GenOcode(CODE_BLOCK& CodeBlock)
     int Funcvaltype = 1;
     for(int i=0;i<(int)OcodeTable.size();i++)
     {
-        Ocode2Obcode.push_back(ObCodeTable.size());
         CurOcodeIndex = i;
         string A = OcodeTable[i].linkres;
         string B = OcodeTable[i].op1;
@@ -288,7 +288,8 @@ void ObjectCodeGenerator::GenOcode(CODE_BLOCK& CodeBlock)
             if(optype == 21)
                 GenOcodeEnd(CodeBlock);
             ObCodeTable.push_back(myop2cmd[op]+" "+regA+" "+regB+" "+regC);
-            DeleteVar(B,regB);
+            if(isFloat(B.c_str()))
+                DeleteVar(B,regB);
         }
         else if(optype == 3)//@BackReturn
         {
@@ -344,6 +345,8 @@ void ObjectCodeGenerator::GenOcode(CODE_BLOCK& CodeBlock)
         }
         if(optype == 21 || op == "j")//跳转语句
             JumpPos.push_back(ObCodeTable.size()-1);
+        if(i!=(int)OcodeTable.size()-1)
+            Ocode2Obcode.push_back(ObCodeTable.size());
     }
 }
 
@@ -408,7 +411,7 @@ string ObjectCodeGenerator::AllocRegister(string var,int type, CODE_BLOCK &CurBl
 
         int varaddr = varinfo.addr;
         if(myvartype==1)//说明是数组元素
-            varaddr+=CalArrayPos(var);//计算数组元素的位置
+            varaddr+=CalArrayPos(var)*addr_unit;//计算数组元素的位置
         //生成取数指令
         ObCodeTable.push_back("lw "+Reg+" 0x"+myitoa(varaddr)+"($t0)");
         //修改varinfo，
@@ -463,7 +466,7 @@ string ObjectCodeGenerator::FindAllocReg(string var,int type,CODE_BLOCK &CurBloc
 
             int varaddr = varinfo.addr;
             if(myvartype==1)//说明是数组元素
-                varaddr+=CalArrayPos(thisvar);//计算数组元素的位置
+                varaddr+=CalArrayPos(thisvar)*addr_unit;;//计算数组元素的位置
             ObCodeTable.push_back("sw "+choose_reg+" 0x"+myitoa(varaddr)+"($t0)");
             varinfo.isnew = 1;//表示写回内存，是新的了
             for(int j=0;j<(int)AVALUE[thisvar].size();j++)//更新AVALUE

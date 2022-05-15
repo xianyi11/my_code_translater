@@ -105,6 +105,7 @@ Optimizer::Optimizer(vector<Var> VarTable1,vector<Func> FuncTable1,vector<Code> 
     memset(CutVis,0x0,sizeof(CutVis));
     memset(indegree,0x0,sizeof(indegree));
     Divblocks();
+    UpdateJumpTar();//修改Jump的目标地址为基本块的编号
     for(int i=0;i<(int)CodeBlock.size();i++)
     {
         if(i == (int)CodeBlock.size()-1)
@@ -116,10 +117,21 @@ Optimizer::Optimizer(vector<Var> VarTable1,vector<Func> FuncTable1,vector<Code> 
 //        cout<<"CodeBlock[i].Outvarlist.size(): "<<CodeBlock[i].Outvarlist.size()<<endl;
         GenOCode(CodeBlock[i]);
     }
+    int begin_index = 0;
+    for(int i=0;i<(int)CodeBlock.size();i++)
+    {
+        CodeBlock[i].BeginIndex = begin_index;
+        begin_index += CodeBlock[i].Ocode.size();
+    }
     for(int i=0;i<(int)CodeBlock.size();i++)
     {
         for(int j=0;j<(int)CodeBlock[i].Ocode.size();j++)
         {
+            if(CodeBlock[i].Ocode[j].op[0] == 'j')//如果是跳转指令
+            {
+                int jumpblockid = atoi(CodeBlock[i].Ocode[j].linkres.c_str());
+                CodeBlock[i].Ocode[j].linkres = to_string(CodeBlock[jumpblockid].BeginIndex);//还原jump指令的地址
+            }
             OptimCodeTable.push_back(CodeBlock[i].Ocode[j]);
         }
     }
@@ -274,7 +286,7 @@ void Optimizer::Divblocks()
     {
         for(int j=0;j<(int)CodeBlock.size();j++)//清空vis
             CodeBlock[j].vis = 0;
-        CodeBlock[i].vis = 1;
+//        CodeBlock[i].vis = 1;
         FindOutVar(CodeBlock[i].id,CodeBlock[i].id);
         //如果是return语句，return的变量会在基本块之后被使用
         if(CodeBlock[i].code[CodeBlock[i].code.size()-1].op == "return")
@@ -303,6 +315,21 @@ void Optimizer::Divblocks()
         CodeBlock[i].Outvarlist = temp;
     }
     return;
+}
+void Optimizer::UpdateJumpTar()
+{
+    for(int i=0;i<(int)CodeBlock.size();i++)
+    {
+        if(CodeBlock[i].code[CodeBlock[i].code.size()-1].op[0] == 'j')//说明是跳转指令
+        {
+            int jumptar = atoi(CodeBlock[i].code[CodeBlock[i].code.size()-1].linkres.c_str());
+            for(int j=0;j<(int)CodeBlock.size();j++)
+            {
+                if(CodeBlock[j].BeginIndex == jumptar)
+                    CodeBlock[i].code[CodeBlock[i].code.size()-1].linkres = to_string(j);//改成基本块的编号
+            }
+        }
+    }
 }
 
 void Optimizer::DeleteVar(string val1,int id)
